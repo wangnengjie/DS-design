@@ -3,7 +3,7 @@ import { Layout, Typography, Row, Col } from "antd";
 import FModule, { FModuleProps } from "../../components/FModule";
 import sudoku from "../../assets/img/sudoku.png";
 import cnf from "../../assets/img/cnf.png";
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
 
 const style: { [key: string]: React.CSSProperties } = {

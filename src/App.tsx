@@ -4,7 +4,8 @@ import bindings from "bindings";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import { Icon } from "antd";
 import { ipcRenderer } from "electron";
-import Index from "./pages/Index/index";
+import Index from "./pages/Index";
+import SAT from "./pages/SAT";
 
 const App = () => {
   console.log(bindings("hello").hello());
@@ -12,18 +13,19 @@ const App = () => {
     <>
       <Icon
         type="close-circle"
-        theme="twoTone"
         onClick={() => ipcRenderer.sendSync("closeWindow")}
         style={{
           position: "absolute",
           top: "5vh",
           right: "5vw",
-          fontSize: "24px"
+          fontSize: "24px",
+          color: "#40a9ff"
         }}
       />
       <Router>
         <Switch>
-          <Route path="/" exact component={Index}></Route>
+          <Route path="/" exact component={Index} />
+          <Route path="/SAT" component={SAT} />
         </Switch>
       </Router>
     </>
