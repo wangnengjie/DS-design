@@ -62,7 +62,6 @@ auto Dpll::solve() -> std::pair<State, double> {
                 std::chrono::duration_cast<std::chrono::microseconds>(cend - cstart).count() /
                     1000.0};
     }
-    std::cout << "finish preload" << std::endl;
     while (true) {
         if (outOfTime) {
             return {unknown, 0};

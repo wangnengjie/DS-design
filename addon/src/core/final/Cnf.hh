@@ -7,12 +7,16 @@
 #pragma once
 
 #include "Clause.hh"
+#include <sstream>
+#include <string>
+#include <iostream>
 namespace final {
 struct Cnf {
     Literals litSet;
     std::list<std::shared_ptr<Clause>> claSet;
 };
-auto cnfParser() -> Cnf;
+auto cnfParser(const std::string &path) -> Cnf;
+auto cnfParser(std::istringstream &instr) -> Cnf;
 } // namespace final
 
 #endif // CORE_FINAL_CNF_HH

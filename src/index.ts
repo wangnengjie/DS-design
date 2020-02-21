@@ -28,7 +28,8 @@ const createWindow = () => {
 };
 
 const callback = (p: Problem[]) => {
-  ipcMain.emit("updateList", p);
+  console.log("callback");
+  mainWindow.webContents.send("updateList", JSON.stringify(p));
 };
 
 const problemSet = new DpllCenter(callback);
@@ -37,7 +38,7 @@ ipcMain.on("closeWindow", (event, args) => {
   mainWindow.close();
 });
 
-ipcMain.on("addProblem", (event, filePath: string) => {
+ipcMain.on("addProblem", async (event, filePath: string) => {
   problemSet.addProblem(filePath);
 });
 

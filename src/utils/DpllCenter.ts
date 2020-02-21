@@ -1,12 +1,13 @@
 import fs from "fs";
 import readline from "readline";
 import nanoid from "nanoid";
+import bindings from "bindings";
+import writeRes from "./writeRes";
 
 export interface SolveResult {
   state: number;
   lits: number[];
   time: number | null;
-  resFile: string;
 }
 
 export interface Problem {
@@ -14,7 +15,7 @@ export interface Problem {
   filePath: string;
   litSize: number;
   clauseSize: number;
-  result: SolveResult | null;
+  resFile: string | null;
 }
 
 class DpllCenter {
@@ -33,11 +34,11 @@ class DpllCenter {
     const np: Problem = {
       filePath,
       id: nanoid(),
-      result: null,
       litSize: 0,
-      clauseSize: 0
+      clauseSize: 0,
+      resFile: null
     };
-
+    console.log(filePath);
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({
       input: fileStream,
@@ -55,7 +56,8 @@ class DpllCenter {
     fileStream.close();
 
     this.problemList.push(np);
-    this.solve(np);
+    this.cb(this.problemList);
+    await this.solve(np);
     this.cb(this.problemList);
   }
 
@@ -68,10 +70,23 @@ class DpllCenter {
   }
 
   private async solve(p: Problem): Promise<void> {
-    // bindings.xxxx.....
-    // this.problemList.find(v => v.id === p.id);
-    // ipcMain.emit("update", this.problemList);
-    this.cb(this.problemList);
+    const resFunc = (async () => {
+      return bindings("addon").satSolver(
+        fs.readFileSync(p.filePath).toString()
+      ) as SolveResult;
+    })();
+
+    const path = this.generatePath(p.filePath);
+    const res = await resFunc;
+    this.problemList.find(v => v.id === p.id).resFile = path;
+    writeRes(path, res);
+  }
+
+  private generatePath(path: string): string {
+    let arr = path.split("\\");
+    arr = arr[arr.length - 1].split(".");
+    arr[1] = "res";
+    return "./result/" + arr.join(".");
   }
 }
 

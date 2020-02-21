@@ -3,7 +3,7 @@
 #include "src/core/final/Dpll.hh"
 #include <chrono>
 #include <iostream>
-auto main() -> int {
+auto main(int argc, char **argv) -> int {
     //    //    std::cout << "hello" << std::endl;
     //    auto &&cnf = origin::parser();
     //    //    std::cout << "hello" << std::endl;
@@ -19,7 +19,7 @@ auto main() -> int {
     //            std::cout << "unknown";
     //        }
     //    }
-    final::Dpll dpll(final::cnfParser());
+    final::Dpll dpll(final::cnfParser(std::string(argv[1])));
     std::cout << "finish parse" << std::endl;
     auto res = dpll.solve();
     std::cout << res.first << std::endl << res.second << std::endl;

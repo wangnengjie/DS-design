@@ -94,3 +94,6 @@ out/
 # node-gyp
 build/
 bin/
+
+# result
+result/
