@@ -13,9 +13,9 @@ module.exports = {
   },
   plugins: plugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".node"],
-    alias: {
-      bindings: path.resolve(__dirname, "./addon/bindings.ts")
-    }
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".node"]
+    // alias: {
+    //   bindings: path.resolve(__dirname, "./addon/bindings.ts")
+    // }
   }
 };

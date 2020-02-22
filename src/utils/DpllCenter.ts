@@ -1,8 +1,12 @@
 import fs from "fs";
+import { execFile as _execFile } from "child_process";
+import { promisify } from "util";
 import readline from "readline";
 import nanoid from "nanoid";
-import bindings from "bindings";
-import writeRes from "./writeRes";
+import detectResDir from "./detectDir";
+// import writeRes from "./writeRes";
+
+const execFile = promisify(_execFile);
 
 export interface SolveResult {
   state: number;
@@ -38,7 +42,6 @@ class DpllCenter {
       clauseSize: 0,
       resFile: null
     };
-    console.log(filePath);
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({
       input: fileStream,
@@ -70,16 +73,17 @@ class DpllCenter {
   }
 
   private async solve(p: Problem): Promise<void> {
-    const resFunc = (async () => {
-      return bindings("addon").satSolver(
-        fs.readFileSync(p.filePath).toString()
-      ) as SolveResult;
-    })();
-
+    detectResDir();
     const path = this.generatePath(p.filePath);
-    const res = await resFunc;
+    if (process.env.npm_lifecycle_event) {
+      await execFile("addon/bin/DS_design.exe", [p.filePath, path]);
+    } else {
+      await execFile("resources/app/.webpack/DS_design.exe", [
+        p.filePath,
+        path
+      ]);
+    }
     this.problemList.find(v => v.id === p.id).resFile = path;
-    writeRes(path, res);
   }
 
   private generatePath(path: string): string {

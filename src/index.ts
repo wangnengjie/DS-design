@@ -28,7 +28,6 @@ const createWindow = () => {
 };
 
 const callback = (p: Problem[]) => {
-  console.log("callback");
   mainWindow.webContents.send("updateList", JSON.stringify(p));
 };
 

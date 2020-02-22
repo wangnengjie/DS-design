@@ -15,7 +15,6 @@ const style: { [key: string]: React.CSSProperties } = {
 
 const SAT: FC = memo(() => {
   const history = useHistory();
-
   useEffect(() => {
     // const c = (event: IpcRendererEvent, v: any) => console.log(v);
     ipcRenderer.on("updateList", (event, args) => {
