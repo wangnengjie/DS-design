@@ -1,4 +1,8 @@
+import nanoid from "nanoid";
+import { writeCnf } from "./cnf";
+
 class BSudoku {
+  id = nanoid();
   rank: number;
   table: number[][];
   clauses: number[][] = [];
@@ -127,6 +131,7 @@ class BSudoku {
     this.rule1();
     this.rule2();
     this.rule3();
+    writeCnf(`${this.id}.cnf`, this.count - 1, this.clauses);
   }
 }
 
