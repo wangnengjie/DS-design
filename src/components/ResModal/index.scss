@@ -1,0 +1,14 @@
+$reswidth: 45px;
+
+#reslits {
+  display: flex;
+  flex-wrap: wrap;
+  width: $reswidth * 10.5;
+  max-height: 30vh;
+  overflow-y: scroll;
+  div {
+    width: $reswidth;
+    height: 20px;
+    text-align: right;
+  }
+}

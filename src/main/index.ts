@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import DpllCenter, { Problem } from "./utils/DpllCenter";
+import "./satIpc";
+// import DpllCenter, { Problem } from "../utils/DpllCenter";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -21,29 +22,12 @@ const createWindow = () => {
     useContentSize: true,
     webPreferences: {
       nodeIntegration: true
+      // webSecurity: false
     }
   });
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
 };
-
-const callback = (p: Problem[]) => {
-  mainWindow.webContents.send("updateList", JSON.stringify(p));
-};
-
-const problemSet = new DpllCenter(callback);
-
-ipcMain.on("closeWindow", (event, args) => {
-  mainWindow.close();
-});
-
-ipcMain.on("addProblem", async (event, filePath: string) => {
-  problemSet.addProblem(filePath);
-});
-
-ipcMain.on("removeProblem", (event, id: string) => {
-  problemSet.removeProblem(id);
-});
 
 app.on("ready", createWindow);
 
@@ -64,5 +48,10 @@ app.on("activate", () => {
   }
 });
 
+ipcMain.on("closeWindow", (event, args) => {
+  mainWindow.close();
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+export { mainWindow };

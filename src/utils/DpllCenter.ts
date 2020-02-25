@@ -4,7 +4,7 @@ import { promisify } from "util";
 import readline from "readline";
 import nanoid from "nanoid";
 import detectResDir from "./detectDir";
-// import writeRes from "./writeRes";
+import { deleteRes } from "./res";
 
 const execFile = promisify(_execFile);
 
@@ -67,6 +67,7 @@ class DpllCenter {
   removeProblem(id: string): void {
     const index = this.problemList.findIndex(v => v.id === id);
     if (index != -1) {
+      deleteRes(this.problemList[index].resFile);
       this.problemList.splice(index, 1);
       this.cb(this.problemList);
     }
@@ -74,7 +75,8 @@ class DpllCenter {
 
   private async solve(p: Problem): Promise<void> {
     detectResDir();
-    const path = this.generatePath(p.filePath);
+    // const path = this.generatePath(p.filePath);
+    const path = `./result/${p.id}.res`;
     if (process.env.npm_lifecycle_event) {
       await execFile("addon/bin/DS_design.exe", [p.filePath, path]);
     } else {

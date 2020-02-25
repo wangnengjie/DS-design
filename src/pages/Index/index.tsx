@@ -14,8 +14,7 @@ const style: { [key: string]: React.CSSProperties } = {
   title: {
     textAlign: "center",
     color: "rgb(24,144,255)",
-    marginTop: "0.5em",
-    userSelect: "none"
+    marginTop: "0.5em"
   },
   feature: {
     padding: "50px 40px 20px 40px"

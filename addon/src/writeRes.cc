@@ -5,6 +5,8 @@
 namespace final {
 auto writeRes(State s, double time, Literals &lits, std::string path) -> void {
     std::ofstream out(path, std::ios::out | std::ios::trunc);
+    out.setf(std::ios::fixed);
+    out.unsetf(std::ios::floatfield);
     switch (s) {
     case satisfied:
         out << "s 1" << std::endl;

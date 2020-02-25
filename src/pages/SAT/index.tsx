@@ -1,7 +1,9 @@
-import React, { FC, memo, useEffect } from "react";
+import React, { FC, memo, useEffect, useState } from "react";
 import { Layout, Icon } from "antd";
 import { useHistory } from "react-router-dom";
 import InputFile from "../../components/InputFile";
+import ProblemList from "../../components/ProblemList";
+import { Problem } from "../../utils/DpllCenter";
 import { ipcRenderer } from "electron";
 import "./index.scss";
 
@@ -15,11 +17,16 @@ const style: { [key: string]: React.CSSProperties } = {
 
 const SAT: FC = memo(() => {
   const history = useHistory();
+  const [problemList, setProblemList] = useState<Problem[]>([]);
+
   useEffect(() => {
-    // const c = (event: IpcRendererEvent, v: any) => console.log(v);
-    ipcRenderer.on("updateList", (event, args) => {
-      console.log("received");
-      console.log(args);
+    ipcRenderer.send("getProblems");
+    console.log("1");
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on("updateList", (event, args: Problem[]) => {
+      setProblemList(args.concat());
     });
     return () => {
       ipcRenderer.removeAllListeners("updateList");
@@ -27,16 +34,14 @@ const SAT: FC = memo(() => {
   }, []);
 
   const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const path = e.target.files[0].path;
-    ipcRenderer.send("addProblem", path.toString());
+    ipcRenderer.send("addProblem", e.target.files[0].path);
     e.target.value = null;
   };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    const path = e.dataTransfer.files[0].path;
-    ipcRenderer.send("addProblem", path.toString());
+    ipcRenderer.send("addProblem", e.dataTransfer.files[0].path);
   };
 
   return (
@@ -58,6 +63,7 @@ const SAT: FC = memo(() => {
             onFileDrop={handleDrop}
             onInputFileChange={handleInputFileChange}
           />
+          <ProblemList problemList={problemList} />
         </Content>
       </Layout>
     </>

@@ -12,6 +12,9 @@ VCounter::VCounter(std::vector<int> &countData) {
     for (int i = 2; i < countData.size(); i++) {
         counter.insert({i % 2 == 0 ? i / 2 : -(i / 2), countData[i]});
     }
+//    for (auto &v : counter) {
+//        std::cout << v.first << " " << v.second << std::endl;
+//    }
     reset();
 }
 
@@ -167,6 +170,7 @@ auto Dpll::decide() -> bool {
         }
         decideStack.push({v, false});
         assignStack.push(std::list<int>());
+//        std::cout << v << std::endl;
         return true;
     }
     return false;
