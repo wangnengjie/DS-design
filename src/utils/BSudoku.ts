@@ -1,5 +1,11 @@
 import nanoid from "nanoid";
+import { execFile as _execFile } from "child_process";
+import { promisify } from "util";
 import { writeCnf } from "./cnf";
+import { readRes } from "./res";
+import detectDir from "./detectDir";
+
+const execFile = promisify(_execFile);
 
 class BSudoku {
   id = nanoid();
@@ -127,11 +133,31 @@ class BSudoku {
     }
   }
 
-  public generate() {
+  public generate(prefill: number[] = []) {
+    for (const v of prefill) {
+      this.clauses.push([v]);
+    }
     this.rule1();
     this.rule2();
     this.rule3();
+    detectDir();
     writeCnf(`${this.id}.cnf`, this.count - 1, this.clauses);
+  }
+
+  public async solve() {
+    detectDir();
+    if (process.env.npm_lifecycle_event) {
+      await execFile("addon/bin/DS_design.exe", [
+        `./cnf/${this.id}.cnf`,
+        `./result/${this.id}.res`
+      ]);
+    } else {
+      await execFile("resources/app/.webpack/DS_design.exe", [
+        `./cnf/${this.id}.cnf`,
+        `./result/${this.id}.res`
+      ]);
+    }
+    return readRes(`./result/${this.id}.res`);
   }
 }
 

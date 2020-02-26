@@ -3,7 +3,7 @@ import { execFile as _execFile } from "child_process";
 import { promisify } from "util";
 import readline from "readline";
 import nanoid from "nanoid";
-import detectResDir from "./detectDir";
+import detectDir from "./detectDir";
 import { deleteRes } from "./res";
 
 const execFile = promisify(_execFile);
@@ -74,7 +74,7 @@ class DpllCenter {
   }
 
   private async solve(p: Problem): Promise<void> {
-    detectResDir();
+    detectDir();
     // const path = this.generatePath(p.filePath);
     const path = `./result/${p.id}.res`;
     if (process.env.npm_lifecycle_event) {

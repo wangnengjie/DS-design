@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
+import { remove } from "fs-extra";
 import "./satIpc";
 // import DpllCenter, { Problem } from "../utils/DpllCenter";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,8 +19,9 @@ const createWindow = () => {
     width: 700,
     resizable: false,
     autoHideMenuBar: true,
-    frame: false,
+    // frame: false,
     useContentSize: true,
+    title: "SAT solver",
     webPreferences: {
       nodeIntegration: true
       // webSecurity: false
@@ -36,6 +38,7 @@ app.on("window-all-closed", () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
+    Promise.all([remove("./result"), remove("./cnf")]);
     app.quit();
   }
 });

@@ -5,6 +5,7 @@ import { Icon } from "antd";
 import { ipcRenderer } from "electron";
 import Index from "./pages/Index";
 import SAT from "./pages/SAT";
+import BinaryPuzzle from "./pages/BinaryPuzzle";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Switch>
           <Route path="/" exact component={Index} />
           <Route path="/SAT" component={SAT} />
+          <Route path="/sudoku" component={BinaryPuzzle} />
         </Switch>
       </Router>
     </>
