@@ -8,7 +8,17 @@
 #include <unordered_set>
 
 namespace final {
-auto cnfParser(const std::string &path) -> Cnf {
+
+auto Cnf::addClause(Clause &cla) -> void {
+    std::shared_ptr<Clause> ptr =
+        std::make_shared<Clause>(Clause(cla.getLits(), 0, cla.getLits().size() - 1));
+    claSet.push_front(ptr);
+    for(auto & v:ptr->getLits()){
+        litSet[std::abs(v)].cnClas.push_front(ptr);
+    }
+}
+
+auto Cnf::cnfParser(const std::string &path) -> Cnf {
     std::ifstream file(path);
     std::string s;
     while (true) {
@@ -47,7 +57,7 @@ auto cnfParser(const std::string &path) -> Cnf {
     return std::move(cnf);
 }
 
-auto cnfParser(std::istringstream &instr) -> Cnf {
+auto Cnf::cnfParser(std::istringstream &instr) -> Cnf {
     std::string s;
     while (true) {
         if (instr.get() != 'c') {
@@ -82,6 +92,32 @@ auto cnfParser(std::istringstream &instr) -> Cnf {
         }
     }
     return std::move(cnf);
-};
+}
 
+auto Cnf::cnfParser(int litSize, const std::list<std::list<int>> &clas) -> Cnf {
+    Cnf cnf{Literals(litSize + 1, {unknown, std::list<std::shared_ptr<Clause>>()}),
+            std::list<std::shared_ptr<Clause>>()};
+    for (auto &cla : clas) {
+        int num;
+        bool shouldAdd = true;
+        std::unordered_set<int> set;
+        std::vector<int> lits;
+        for (auto &lit : cla) {
+            if (set.find(-lit) != set.end()) {
+                shouldAdd = false;
+            } else if (set.find(lit) == set.end() && shouldAdd) {
+                lits.push_back(lit);
+                set.insert(lit);
+            }
+        }
+        if (shouldAdd) {
+            auto clause = std::make_shared<Clause>(Clause(lits, 0, lits.size() - 1));
+            cnf.claSet.push_back(clause);
+            for (auto it : lits) {
+                cnf.litSet[std::abs(it)].cnClas.push_back(clause);
+            }
+        }
+    }
+    return std::move(cnf);
+}
 } // namespace final

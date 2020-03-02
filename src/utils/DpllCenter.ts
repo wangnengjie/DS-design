@@ -78,9 +78,10 @@ class DpllCenter {
     // const path = this.generatePath(p.filePath);
     const path = `./result/${p.id}.res`;
     if (process.env.npm_lifecycle_event) {
-      await execFile("addon/bin/DS_design.exe", [p.filePath, path]);
+      await execFile("addon/bin/DS_design.exe", ["--solver", p.filePath, path]);
     } else {
       await execFile("resources/app/.webpack/DS_design.exe", [
+        "--solver",
         p.filePath,
         path
       ]);

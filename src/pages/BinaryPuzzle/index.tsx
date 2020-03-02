@@ -1,5 +1,5 @@
-import React, { FC, memo, useEffect, useState } from "react";
-import { Layout, Icon, Button, Select, Row, Col } from "antd";
+import React, { FC, memo, useState } from "react";
+import { Layout, Icon, Button, Select, Row, Col, Spin } from "antd";
 import { useHistory } from "react-router-dom";
 import BSudoku from "../../utils/BSudoku";
 import "./index.scss";
@@ -22,56 +22,33 @@ const SAT: FC = memo(() => {
   const [rank, setRank] = useState<number>(null);
   const [table, setTable] = useState<Block[][]>(null);
   const [solved, setSolved] = useState<boolean>(false);
+  const [sudoku, setSudoku] = useState<BSudoku>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleRankChange = (value: number) => {
+  const handleRankChange = async (value: number) => {
+    setLoading(true);
+    console.log("1");
+    const np = new BSudoku(value);
+    console.log("2");
     const arr: Block[][] = new Array(value);
+    const preFill = await np.generate();
+    console.log("3");
     for (let i = 0; i < value; i++) {
       arr[i] = new Array(value)
         .fill(-1)
         .map(() => ({ value: 2, preFill: false }));
     }
-    if (value === 10) {
-      [
-        [0, 1],
-        [0, 4],
-        [2, 4],
-        [2, 6],
-        [3, 3],
-        [3, 5],
-        [3, 6],
-        [3, 9],
-        [4, 2],
-        [6, 0],
-        [6, 3],
-        [6, 4],
-        [6, 6],
-        [7, 0],
-        [7, 2],
-        [7, 3],
-        [9, 1]
-      ].forEach(e => {
-        arr[e[0]][e[1]] = { value: 0, preFill: true };
-      });
-
-      [
-        [0, 8],
-        [1, 0],
-        [2, 7],
-        [2, 9],
-        [3, 0],
-        [5, 7],
-        [6, 9],
-        [7, 5],
-        [8, 9],
-        [9, 5],
-        [9, 8]
-      ].forEach(e => {
-        arr[e[0]][e[1]] = { value: 1, preFill: true };
-      });
+    for (const v of preFill) {
+      const row = Math.floor((Math.abs(v) - 1) / value);
+      const col = (Math.abs(v) - 1) % value;
+      arr[row][col] = { value: v > 0 ? 1 : 0, preFill: true };
     }
-    setRank(value);
+    console.log("4");
     setTable(arr);
+    setRank(value);
     setSolved(false);
+    setSudoku(np);
+    setLoading(false);
   };
 
   const handleBlockClick = (row: number, col: number) => {
@@ -85,19 +62,8 @@ const SAT: FC = memo(() => {
 
   const handleSolve = async () => {
     if (!solved && rank !== null && table !== null) {
-      const b = new BSudoku(rank);
-      const preFill: number[] = [];
-      for (let i = 0; i < rank; i++) {
-        for (let j = 0; j < rank; j++) {
-          if (table[i][j].preFill) {
-            preFill.push(
-              table[i][j].value === 1 ? i * rank + j + 1 : -(i * rank + j + 1)
-            );
-          }
-        }
-      }
-      b.generate(preFill);
-      const res = await b.solve();
+      setLoading(true);
+      const res = await sudoku.solve();
       const nt = table.concat();
       for (let i = 0; i < Math.pow(rank, 2); i++) {
         const row = Math.floor(i / rank);
@@ -106,11 +72,12 @@ const SAT: FC = memo(() => {
       }
       setTable(nt);
       setSolved(true);
+      setLoading(false);
     }
   };
 
   return (
-    <>
+    <Spin size="large" spinning={loading}>
       <Icon
         type="left-circle"
         style={{
@@ -202,7 +169,7 @@ const SAT: FC = memo(() => {
           )}
         </Content>
       </Layout>
-    </>
+    </Spin>
   );
 });
 

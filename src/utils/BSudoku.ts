@@ -13,6 +13,7 @@ class BSudoku {
   table: number[][];
   clauses: number[][] = [];
   count = 1; // next lit
+  prefill: number[];
 
   public constructor(rank: number) {
     this.rank = rank;
@@ -89,6 +90,7 @@ class BSudoku {
         let fa: number[] = new Array(this.rank).fill(0).map(() => this.count++);
         let tf: number[] = new Array(this.rank).fill(0).map(() => this.count++);
         let all = this.count++;
+        this.clauses.push([all]);
         for (let k = 1; k <= this.rank; k++) {
           const t = k - 1;
           this.clauses.push([this.table[i][k], -tr[t]]);
@@ -112,6 +114,7 @@ class BSudoku {
         fa = new Array(this.rank).fill(0).map(() => this.count++);
         tf = new Array(this.rank).fill(0).map(() => this.count++);
         all = this.count++;
+        this.clauses.push([all]);
         for (let k = 1; k <= this.rank; k++) {
           const t = k - 1;
           this.clauses.push([this.table[k][i], -tr[t]]);
@@ -133,26 +136,51 @@ class BSudoku {
     }
   }
 
-  public generate(prefill: number[] = []) {
-    for (const v of prefill) {
+  public async generate() {
+    let arr: number[] = [];
+    if (process.env.npm_lifecycle_event) {
+      console.log("in-1");
+      const { stdout } = await execFile("addon/bin/DS_design.exe", [
+        "--gen",
+        this.rank.toString()
+      ]);
+      console.log("in-2");
+      arr = stdout
+        .trim()
+        .split(" ")
+        .map(e => Number.parseInt(e));
+    } else {
+      const { stdout } = await execFile(
+        "resources/app/.webpack/DS_design.exe",
+        ["--gen", this.rank.toString()]
+      );
+      arr = stdout
+        .trim()
+        .split(" ")
+        .map(e => Number.parseInt(e));
+    }
+    this.prefill = arr;
+    return arr;
+  }
+
+  public async solve() {
+    detectDir();
+    for (const v of this.prefill) {
       this.clauses.push([v]);
     }
     this.rule1();
     this.rule2();
     this.rule3();
-    detectDir();
     writeCnf(`${this.id}.cnf`, this.count - 1, this.clauses);
-  }
-
-  public async solve() {
-    detectDir();
     if (process.env.npm_lifecycle_event) {
       await execFile("addon/bin/DS_design.exe", [
+        "--solver",
         `./cnf/${this.id}.cnf`,
         `./result/${this.id}.res`
       ]);
     } else {
       await execFile("resources/app/.webpack/DS_design.exe", [
+        "--solver",
         `./cnf/${this.id}.cnf`,
         `./result/${this.id}.res`
       ]);

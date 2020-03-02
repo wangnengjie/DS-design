@@ -47,7 +47,7 @@ class Dpll {
     std::shared_ptr<VCounter> vc;
 
   public:
-    explicit Dpll(Cnf cnf);
+    explicit Dpll(Cnf _cnf);
 
   public:
     auto getCnf() -> Cnf & { return cnf; };

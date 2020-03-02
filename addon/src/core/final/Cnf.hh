@@ -7,16 +7,25 @@
 #pragma once
 
 #include "Clause.hh"
+#include <iostream>
 #include <sstream>
 #include <string>
-#include <iostream>
+#include <utility>
 namespace final {
-struct Cnf {
+class Cnf {
+  public:
     Literals litSet;
     std::list<std::shared_ptr<Clause>> claSet;
+    Cnf() = default;
+    Cnf(Literals _litSet, std::list<std::shared_ptr<Clause>> _claSet)
+        : litSet(std::move(_litSet)), claSet(std::move(_claSet)){};
+
+  public:
+    auto addClause(Clause &cla) -> void;
+    static auto cnfParser(const std::string &path) -> Cnf;
+    static auto cnfParser(std::istringstream &instr) -> Cnf;
+    static auto cnfParser(int litSize, const std::list<std::list<int>>& clas) -> Cnf;
 };
-auto cnfParser(const std::string &path) -> Cnf;
-auto cnfParser(std::istringstream &instr) -> Cnf;
 } // namespace final
 
 #endif // CORE_FINAL_CNF_HH

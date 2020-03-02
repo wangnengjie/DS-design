@@ -24,6 +24,7 @@ class Clause {
     unsigned int ptr2;
 
   public:
+    Clause() : ptr1(0), ptr2(0){};
     Clause(std::vector<int> lits, unsigned int ptr1, unsigned int ptr2)
         : lits(std::move(lits)), ptr1(ptr1), ptr2(ptr2){};
 

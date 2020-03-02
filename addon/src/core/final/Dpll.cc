@@ -47,7 +47,7 @@ auto Dpll::checkTime() -> void {
     while (!solved && std::chrono::duration_cast<std::chrono::seconds>(
                           std::chrono::steady_clock::now() - cstart)
                               .count() < MAX_SOLVE_TIME) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     if (!solved) {
         outOfTime = true;

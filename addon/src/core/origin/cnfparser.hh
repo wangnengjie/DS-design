@@ -6,7 +6,7 @@
 #define CNFPARSER_HH
 #pragma once
 
-#include "core/origin/Cnf.hh"
+#include "Cnf.hh"
 
 namespace origin {
 auto parser() -> Cnf;
