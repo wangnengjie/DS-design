@@ -21,7 +21,6 @@ const SAT: FC = memo(() => {
 
   useEffect(() => {
     ipcRenderer.send("getProblems");
-    console.log("1");
   }, []);
 
   useEffect(() => {

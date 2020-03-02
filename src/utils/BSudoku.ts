@@ -139,12 +139,10 @@ class BSudoku {
   public async generate() {
     let arr: number[] = [];
     if (process.env.npm_lifecycle_event) {
-      console.log("in-1");
       const { stdout } = await execFile("addon/bin/DS_design.exe", [
         "--gen",
         this.rank.toString()
       ]);
-      console.log("in-2");
       arr = stdout
         .trim()
         .split(" ")

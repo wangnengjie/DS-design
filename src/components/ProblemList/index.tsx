@@ -27,7 +27,6 @@ const ProblemList: FC<ProblemListProps> = memo(
           .split("\\")
           .slice(-1)[0]
           .split(".")[0] + ".res";
-      console.log(a.download);
       a.click();
       window.URL.revokeObjectURL(url);
       a = null;

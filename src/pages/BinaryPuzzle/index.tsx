@@ -27,12 +27,9 @@ const SAT: FC = memo(() => {
 
   const handleRankChange = async (value: number) => {
     setLoading(true);
-    console.log("1");
     const np = new BSudoku(value);
-    console.log("2");
     const arr: Block[][] = new Array(value);
     const preFill = await np.generate();
-    console.log("3");
     for (let i = 0; i < value; i++) {
       arr[i] = new Array(value)
         .fill(-1)
@@ -43,7 +40,6 @@ const SAT: FC = memo(() => {
       const col = (Math.abs(v) - 1) % value;
       arr[row][col] = { value: v > 0 ? 1 : 0, preFill: true };
     }
-    console.log("4");
     setTable(arr);
     setRank(value);
     setSolved(false);
