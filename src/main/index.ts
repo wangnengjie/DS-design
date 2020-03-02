@@ -19,7 +19,7 @@ const createWindow = () => {
     width: 700,
     resizable: false,
     autoHideMenuBar: true,
-    // frame: false,
+    frame: false,
     useContentSize: true,
     title: "SAT solver",
     webPreferences: {

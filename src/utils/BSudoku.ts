@@ -161,9 +161,13 @@ class BSudoku {
     return arr;
   }
 
-  public async solve() {
+  public async solve(withoutPrefill: number[] = []) {
     detectDir();
+    this.clauses = [];
     for (const v of this.prefill) {
+      this.clauses.push([v]);
+    }
+    for (const v of withoutPrefill) {
       this.clauses.push([v]);
     }
     this.rule1();

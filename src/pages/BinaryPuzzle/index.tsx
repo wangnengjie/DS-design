@@ -1,5 +1,5 @@
 import React, { FC, memo, useState } from "react";
-import { Layout, Icon, Button, Select, Row, Col, Spin } from "antd";
+import { Layout, Icon, Button, Select, Row, Col, Spin, message } from "antd";
 import { useHistory } from "react-router-dom";
 import BSudoku from "../../utils/BSudoku";
 import "./index.scss";
@@ -47,12 +47,60 @@ const SAT: FC = memo(() => {
     setLoading(false);
   };
 
-  const handleBlockClick = (row: number, col: number) => {
-    const block = table[row][col];
-    if (!block.preFill && !solved) {
-      const nt = table.concat();
-      nt[row][col].value = (block.value + 1) % 3;
-      setTable(nt);
+  const handleReset = async () => {
+    setLoading(true);
+    const np = new BSudoku(rank);
+    const arr: Block[][] = new Array(rank);
+    const preFill = await np.generate();
+    for (let i = 0; i < rank; i++) {
+      arr[i] = new Array(rank)
+        .fill(-1)
+        .map(() => ({ value: 2, preFill: false }));
+    }
+    for (const v of preFill) {
+      const row = Math.floor((Math.abs(v) - 1) / rank);
+      const col = (Math.abs(v) - 1) % rank;
+      arr[row][col] = { value: v > 0 ? 1 : 0, preFill: true };
+    }
+    setTable(arr);
+    setSolved(false);
+    setSudoku(np);
+    setLoading(false);
+  };
+
+  const handleClean = () => {
+    const nt = table.concat();
+    for (let i = 0; i < rank; i++) {
+      for (let j = 0; j < rank; j++) {
+        if (!nt[i][j].preFill) {
+          nt[i][j].value = 2;
+        }
+      }
+    }
+    setSolved(false);
+    setTable(nt);
+  };
+
+  const handleSubmit = async () => {
+    const arr: number[] = [];
+    for (let i = 0; i < rank; i++) {
+      for (let j = 0; j < rank; j++) {
+        if (table[i][j].value === 2) {
+          return;
+        }
+        if (!table[i][j].preFill) {
+          const v = i * rank + j + 1;
+          arr.push(table[i][j].value === 1 ? v : -v);
+        }
+      }
+    }
+    setLoading(true);
+    const res = await sudoku.solve(arr);
+    setLoading(false);
+    if (res.state === 1) {
+      message.success("Bingo! You get right answer!");
+    } else {
+      message.error("Sorry! Please fill again...");
     }
   };
 
@@ -72,8 +120,17 @@ const SAT: FC = memo(() => {
     }
   };
 
+  const handleBlockClick = (row: number, col: number) => {
+    const block = table[row][col];
+    if (!block.preFill && !solved) {
+      const nt = table.concat();
+      nt[row][col].value = (block.value + 1) % 3;
+      setTable(nt);
+    }
+  };
+
   return (
-    <Spin size="large" spinning={loading}>
+    <>
       <Icon
         type="left-circle"
         style={{
@@ -81,91 +138,113 @@ const SAT: FC = memo(() => {
           top: "5vh",
           left: "5vw",
           fontSize: "24px",
-          color: "#40a9ff"
+          color: "#40a9ff",
+          zIndex: 9999
         }}
         onClick={() => history.goBack()}
       />
-      <Layout>
-        <Content style={style.content}>
-          <div style={{ padding: "75px 0 0 0", margin: "0 100px" }}>
-            <Row type="flex" align="middle" justify="space-between">
-              <Col>
-                <Select
-                  placeholder="请选择游戏难度"
-                  onChange={handleRankChange}
-                  style={{ width: "150px" }}
-                >
-                  {[4, 6, 8, 10, 12, 14].map(e => {
-                    return (
-                      <Select.Option
-                        key={e}
-                        value={e}
-                      >{`${e}阶`}</Select.Option>
-                    );
-                  })}
-                </Select>
-              </Col>
-              <Col>
-                <Button type="primary" disabled={rank === null ? true : false}>
-                  重置
-                </Button>
-              </Col>
-              <Col>
-                <Button type="primary" disabled={rank === null ? true : false}>
-                  提交
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  type="primary"
-                  disabled={rank === null ? true : false}
-                  onClick={handleSolve}
-                >
-                  求解
-                </Button>
-              </Col>
-            </Row>
-          </div>
-
-          {table !== null && (
+      <Spin size="large" spinning={loading}>
+        <Layout>
+          <Content style={style.content}>
             <div
-              id="sudokuBar"
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center"
-              }}
+              style={{ padding: "75px 0 0 0", margin: "0 auto", width: "75vw" }}
             >
+              <Row type="flex" align="middle" justify="space-between">
+                <Col>
+                  <Select
+                    placeholder="请选择游戏难度"
+                    onChange={handleRankChange}
+                    style={{ width: "150px" }}
+                  >
+                    {[4, 6, 8, 10, 12, 14].map(e => {
+                      return (
+                        <Select.Option
+                          key={e}
+                          value={e}
+                        >{`${e}阶`}</Select.Option>
+                      );
+                    })}
+                  </Select>
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    disabled={rank === null ? true : false}
+                    onClick={handleReset}
+                  >
+                    重置
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    disabled={rank === null ? true : false}
+                    onClick={handleClean}
+                  >
+                    清空
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    disabled={rank === null ? true : false}
+                    onClick={handleSubmit}
+                  >
+                    提交
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    disabled={rank === null ? true : false}
+                    onClick={handleSolve}
+                  >
+                    求解
+                  </Button>
+                </Col>
+              </Row>
+            </div>
+
+            {table !== null && (
               <div
-                className="sudokuTable"
+                id="sudokuBar"
                 style={{
-                  gridTemplateRows: `repeat(${table.length}, ${
-                    table.length > 8 ? 35 : 40
-                  }px)`,
-                  gridTemplateColumns: `repeat(${table.length}, ${
-                    table.length > 8 ? 35 : 40
-                  }px)`
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center"
                 }}
               >
-                {table.map((row, i) => {
-                  return row.map((unit, j) => {
-                    return (
-                      <div
-                        key={i.toString() + j.toString()}
-                        onClick={() => handleBlockClick(i, j)}
-                        className={unit.preFill ? "prefilled" : ""}
-                      >
-                        <span>{unit.value === 2 ? "" : unit.value}</span>
-                      </div>
-                    );
-                  });
-                })}
+                <div
+                  className="sudokuTable"
+                  style={{
+                    gridTemplateRows: `repeat(${table.length}, ${
+                      table.length > 8 ? 35 : 40
+                    }px)`,
+                    gridTemplateColumns: `repeat(${table.length}, ${
+                      table.length > 8 ? 35 : 40
+                    }px)`
+                  }}
+                >
+                  {table.map((row, i) => {
+                    return row.map((unit, j) => {
+                      return (
+                        <div
+                          key={i.toString() + j.toString()}
+                          onClick={() => handleBlockClick(i, j)}
+                          className={unit.preFill ? "prefilled" : ""}
+                        >
+                          <span>{unit.value === 2 ? "" : unit.value}</span>
+                        </div>
+                      );
+                    });
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </Content>
-      </Layout>
-    </Spin>
+            )}
+          </Content>
+        </Layout>
+      </Spin>
+    </>
   );
 });
 

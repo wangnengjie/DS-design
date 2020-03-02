@@ -16,9 +16,10 @@ const App = () => {
         style={{
           position: "absolute",
           top: "5vh",
-          right: "5vw",
+          right: "calc(5vw - 100vw + 100%)",
           fontSize: "24px",
-          color: "#40a9ff"
+          color: "#40a9ff",
+          zIndex: 9999
         }}
       />
       <Router>
