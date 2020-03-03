@@ -156,7 +156,7 @@ const SAT: FC = memo(() => {
                     onChange={handleRankChange}
                     style={{ width: "150px" }}
                   >
-                    {[4, 6, 8, 10, 12, 14].map(e => {
+                    {[4, 6, 8, 10, 12].map(e => {
                       return (
                         <Select.Option
                           key={e}

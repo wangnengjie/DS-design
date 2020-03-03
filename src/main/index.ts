@@ -19,16 +19,13 @@ const createWindow = () => {
     width: 700,
     resizable: false,
     autoHideMenuBar: true,
-    frame: false,
     useContentSize: true,
-    title: "SAT solver",
     webPreferences: {
       nodeIntegration: true
-      // webSecurity: false
     }
   });
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 app.on("ready", createWindow);
