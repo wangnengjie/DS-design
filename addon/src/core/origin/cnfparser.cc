@@ -15,7 +15,7 @@ auto origin::parser() -> Cnf {
         std::getline(std::cin, s);
     }
     int litSize, claSize;
-    scanf_s(" cnf %d %d", &litSize, &claSize);
+    scanf(" cnf %d %d", &litSize, &claSize);
     Literals literals(litSize + 1, {State::unknown});
     Clauses clauses(claSize, Clause{std::unordered_set<lit>()});
     getchar();

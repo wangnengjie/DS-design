@@ -139,17 +139,21 @@ class BSudoku {
   public async generate() {
     let arr: number[] = [];
     if (process.env.npm_lifecycle_event) {
-      const { stdout } = await execFile("addon/bin/DS_design.exe", [
-        "--gen",
-        this.rank.toString()
-      ]);
+      const { stdout } = await execFile(
+        process.platform === "linux"
+          ? "addon/bin/DS_design"
+          : "addon/bin/DS_design.exe",
+        ["--gen", this.rank.toString()]
+      );
       arr = stdout
         .trim()
         .split(" ")
         .map(e => Number.parseInt(e));
     } else {
       const { stdout } = await execFile(
-        "resources/app/.webpack/DS_design.exe",
+        process.platform === "linux"
+          ? "resources/app/.webpack/DS_design"
+          : "resources/app/.webpack/DS_design.exe",
         ["--gen", this.rank.toString()]
       );
       arr = stdout
@@ -175,17 +179,19 @@ class BSudoku {
     this.rule3();
     writeCnf(`${this.id}.cnf`, this.count - 1, this.clauses);
     if (process.env.npm_lifecycle_event) {
-      await execFile("addon/bin/DS_design.exe", [
-        "--solver",
-        `./cnf/${this.id}.cnf`,
-        `./result/${this.id}.res`
-      ]);
+      await execFile(
+        process.platform === "linux"
+          ? "addon/bin/DS_design"
+          : "addon/bin/DS_design.exe",
+        ["--solver", `./cnf/${this.id}.cnf`, `./result/${this.id}.res`]
+      );
     } else {
-      await execFile("resources/app/.webpack/DS_design.exe", [
-        "--solver",
-        `./cnf/${this.id}.cnf`,
-        `./result/${this.id}.res`
-      ]);
+      await execFile(
+        process.platform === "linux"
+          ? "resources/app/.webpack/DS_design"
+          : "resources/app/.webpack/DS_design.exe",
+        ["--solver", `./cnf/${this.id}.cnf`, `./result/${this.id}.res`]
+      );
     }
     return readRes(`./result/${this.id}.res`);
   }

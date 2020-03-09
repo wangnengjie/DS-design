@@ -90,6 +90,7 @@ out/
 
 # editor
 .vscode/
+.idea/
 
 # node-gyp
 build/

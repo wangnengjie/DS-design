@@ -78,13 +78,19 @@ class DpllCenter {
     // const path = this.generatePath(p.filePath);
     const path = `./result/${p.id}.res`;
     if (process.env.npm_lifecycle_event) {
-      await execFile("addon/bin/DS_design.exe", ["--solver", p.filePath, path]);
+      await execFile(
+        process.platform === "linux"
+          ? "addon/bin/DS_design"
+          : "addon/bin/DS_design.exe",
+        ["--solver", p.filePath, path]
+      );
     } else {
-      await execFile("resources/app/.webpack/DS_design.exe", [
-        "--solver",
-        p.filePath,
-        path
-      ]);
+      await execFile(
+        process.platform === "linux"
+          ? "resources/app/.webpack/DS_design"
+          : "resources/app/.webpack/DS_design.exe",
+        ["--solver", p.filePath, path]
+      );
     }
     this.problemList.find(v => v.id === p.id).resFile = path;
   }
