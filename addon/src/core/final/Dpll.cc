@@ -67,6 +67,7 @@ auto Dpll::solve() -> std::pair<State, double> {
     }
     while (true) {
         if (outOfTime) {
+            t1.join();
             return {unknown, 0};
         }
         if (!decide()) {
