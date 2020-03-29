@@ -13,18 +13,19 @@ auto Cnf::findUnit() -> lit {
 }
 
 auto Cnf::chooseUnit() -> lit {
-    static std::default_random_engine e(std::time(0));
-    std::vector<lit> l;
+//    static std::default_random_engine e(std::time(0));
+//    std::vector<lit> l;
     for (int i = 1; i < litSet.size(); i++) {
         if (litSet[i].state == State::unknown) {
-            l.push_back(i);
+            return i;
         }
     }
-    if (l.empty()) {
-        return 0;
-    }
-    std::uniform_int_distribution<unsigned> dis(0, l.size() - 1);
-    return l[dis(e)];
+    return 0;
+//    if (l.empty()) {
+//        return 0;
+//    }
+//    std::uniform_int_distribution<unsigned> dis(0, l.size() - 1);
+//    return l[dis(e)];
 }
 
 auto Cnf::simplify(lit v) -> void {
